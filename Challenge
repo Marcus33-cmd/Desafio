@@ -1,0 +1,55 @@
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Scanner;
+
+public class ApiService {
+    public String getExchangeRates() throws Exception {
+        String urlString = "https://api.exchangeratesapi.io/latest"; // URL da API
+        URL url = new URL(urlString);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("GET");
+        
+        // Ler a resposta
+        Scanner scanner = new Scanner(url.openStream());
+        StringBuilder inline = new StringBuilder();
+        
+        while (scanner.hasNext()) {
+            inline.append(scanner.nextLine());
+        }
+        scanner.close();
+        
+        return inline.toString();
+    }
+}
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public class ExchangeRatesResponse {
+    @JsonProperty("rates")
+    private Map<String, Double> rates;
+
+    // Getters e setters
+    public Map<String, Double> getRates() {
+        return rates;
+    }
+
+    public void setRates(Map<String, Double> rates) {
+        this.rates = rates;
+    }
+}
+public List<String> filterSupportedCurrencies(Map<String, Double> rates) {
+    List<String> supportedCurrencies = new ArrayList<>();
+    // Adicione suas moedas de interesse, por exemplo:
+    supportedCurrencies.add("USD");
+    supportedCurrencies.add("EUR");
+    supportedCurrencies.add("BRL");
+    // etc.
+    return supportedCurrencies.stream()
+        .filter(rates::containsKey)
+        .collect(Collectors.toList());
+}
+public void displayMenu() {
+    System.out.println("Conversor de Moedas");
+    System.out.println("1. Converter USD para BRL");
+    System.out.println("2. Converter EUR para BRL");
+    // Adicione mais opções conforme necessário
+}
